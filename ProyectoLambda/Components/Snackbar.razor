@@ -1,0 +1,103 @@
+﻿@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<div class="epic-snackbar @(_visible ? "visible" : "hidden")">
+    <div class="epic-snackbar-content">
+        <i class="epic-icon" style="color: @IconoColor;">@IconoTexto</i>
+        <span class="epic-message">@Mensaje</span>
+        <button class="epic-button" @onclick="OcultarSnackbar">@TextoBoton</button>
+    </div>
+</div>
+
+<style>
+    .epic-snackbar {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background-color: #232323;
+        color: white;
+        border-radius: 8px;
+        min-width: 300px;
+        max-width: 80%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 9999;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .epic-snackbar.visible {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .epic-snackbar.hidden {
+        opacity: 0;
+        transform: translateX(-50%) translateY(100px);
+        pointer-events: none;
+    }
+
+    .epic-snackbar-content {
+        display: flex;
+        align-items: center;
+        padding: 16px;
+    }
+
+    .epic-icon {
+        font-family: 'FontAwesome';
+        font-size: 24px;
+        margin-right: 16px;
+    }
+
+    .epic-message {
+        flex: 1;
+    }
+
+    .epic-button {
+        background: transparent;
+        border: none;
+        color: #0074E4;
+        font-weight: bold;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+</style>
+
+@code {
+    [Parameter] public string Mensaje { get; set; } = "";
+    [Parameter] public string TextoBoton { get; set; } = "OK";
+    [Parameter] public string IconoTexto { get; set; } = "\uf05a"; // Código del icono de info de FontAwesome
+    [Parameter] public string IconoColor { get; set; } = "#0074E4";
+    [Parameter] public int Duracion { get; set; } = 4000;
+
+    private bool _visible = false;
+    private System.Threading.Timer _timer;
+
+    public async Task MostrarSnackbar()
+    {
+        _visible = true;
+        StateHasChanged();
+
+        _timer?.Dispose();
+        _timer = new System.Threading.Timer(
+            _ => InvokeAsync(OcultarSnackbar),
+            null,
+            Duracion,
+            Timeout.Infinite);
+
+        await Task.CompletedTask;
+    }
+
+    public async Task OcultarSnackbar()
+    {
+        _visible = false;
+        StateHasChanged();
+        await Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}

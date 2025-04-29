@@ -1,0 +1,32 @@
+﻿@page "/"
+@using ProyectoLambda.Services.Interface
+@using ProyectoLambda.Components
+@using ProyectoLambda.Services
+@inject IDisplayService Display
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+<button class="btn-native" @onclick="MostrarSnackbar">
+    <span class="bi bi-phone-fill"></span>
+    Mostrar Notificación
+</button>
+
+<Snackbar @ref="snackbar" 
+              Mensaje="¡Logro desbloqueado!" 
+              TextoBoton="ACEPTAR"
+              IconoTexto="\uf091" 
+              IconoColor="#0074E4"
+              Duracion="5000" />
+
+@code {
+    private Snackbar snackbar;
+
+    private async Task MostrarSnackbar()
+    {
+        await snackbar.MostrarSnackbar();
+    }  
+}
